@@ -4,7 +4,7 @@ module Fluent
 
     def initialize
       super
-      require 'redis/namespace'
+      require 'redis'
       require 'msgpack'
     end
 
@@ -14,14 +14,13 @@ module Fluent
       @host = conf.has_key?('host') ? conf['host'] : 'localhost'
       @port = conf.has_key?('port') ? conf['port'] : 6379
       @db = conf.has_key?('db') ? conf['db'] : nil
-      @namespace = conf.has_key?('namespace') ? conf['namespace'] : :fluent
     end
 
     def start
       super
-      redis = Redis.new(:host => @host, :port => @port,
-                        :thread_safe => true, :db => @db)
-      @redis = Redis::Namespace.new(@namespace, :redis => redis)
+
+      @redis = Redis.new(:host => @host, :port => @port,
+                         :thread_safe => true, :db => @db)
     end
 
     def shutdown

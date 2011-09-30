@@ -18,5 +18,4 @@ Gem::Specification.new do |s|
 
   s.add_dependency %q<fluent>, ["~> 0.9.14"]
   s.add_dependency %q<redis>, ["~> 2.2.2"]
-  s.add_dependency %q<redis-namespace>, ["~> 1.1.0"]
 end
