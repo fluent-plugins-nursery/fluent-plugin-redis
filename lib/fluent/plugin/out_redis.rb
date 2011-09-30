@@ -14,6 +14,10 @@ module Fluent
       @host = conf.has_key?('host') ? conf['host'] : 'localhost'
       @port = conf.has_key?('port') ? conf['port'] : 6379
       @db = conf.has_key?('db') ? conf['db'] : nil
+
+      if conf.has_key?('namespace')
+        puts "Namespace option has been removed from fluent-plugin-radis 0.1.1. Please add or remove the namespace #{conf['namespace']} manually."
+      end
     end
 
     def start
