@@ -1,5 +1,15 @@
 = Redis output plugin for Fluent
 
+fluent-plugin-redis is a fluent plugin to output to redis.
+
+== Installation
+
+What you have to do is only installing like this:
+
+    gem install fluent-plugin-redis
+
+Then fluent automatically loads the plugin installed.
+
 == Configuratin
 
     <match redis.**>
