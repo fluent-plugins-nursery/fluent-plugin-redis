@@ -8,9 +8,9 @@
       host localhost
       port 6379
 
-      # db and namespace params are optional.
-      db dababase        # default is null
-      namespace fluent   # default is 'fluent'
+      # database number and namespace params are optional.
+      db_number 0        # 0 is default
+      namespace fluent   # 'fluent' is default
 
       # Other buffer configurations here
     </match>
