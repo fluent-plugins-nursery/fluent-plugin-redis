@@ -31,11 +31,11 @@ module Fluent
       @redis.quit
     end
 
-    def format(tag, event)
+    def format(tag, time, record)
       # event.record[:identifier]=[tag,event.time].join(".")
       # event.record.to_msgpack
-      identifier=[tag,event.time].join(".")
-      [ identifier, event.record ].to_msgpack
+      identifier=[tag, time].join(".")
+      [ identifier, record ].to_msgpack
     end
 
     def write(chunk)
