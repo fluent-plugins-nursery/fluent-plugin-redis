@@ -3,6 +3,7 @@ require 'fluent/test'
 class FileOutputTest < Test::Unit::TestCase
   def setup
     Fluent::Test.setup
+    require 'fluent/plugin/out_redis'
 
     @d = create_driver %[
       host localhost
