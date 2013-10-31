@@ -10,7 +10,7 @@ What you have to do is only installing like this:
 
 Then fluent automatically loads the plugin installed.
 
-== Configuratin
+== Configuration
 
     <match redis.**>
       type redis
