@@ -1,4 +1,5 @@
 require 'fluent/test'
+require 'fluent/plugin/out_redis'
 
 class FileOutputTest < Test::Unit::TestCase
   def setup
