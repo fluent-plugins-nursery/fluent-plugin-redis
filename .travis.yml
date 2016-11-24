@@ -1,0 +1,9 @@
+language: ruby
+services:
+  - redis-server
+rvm:
+  - 2.1
+  - 2.2
+  - 2.3.3
+before_install:
+  - gem update bundler
