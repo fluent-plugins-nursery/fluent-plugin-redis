@@ -21,4 +21,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency %q<rake>, [">= 11.3.0"]
   s.add_development_dependency %q<bundler>
   s.add_development_dependency %q<test-unit>, ["~> 3.1.0"]
+  s.add_development_dependency %q<appraisal>, ["~> 2.1.0"]
 end
