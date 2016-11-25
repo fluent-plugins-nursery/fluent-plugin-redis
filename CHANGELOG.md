@@ -1,3 +1,12 @@
+## 0.2.1
+
+* Use config_param to clarify supported/default parameters.
+* Use log instead of $log if avaliable.
+
+## 0.2.0
+
+* Support Fluentd v0.10.
+
 ## 0.1.3
 
 * Colored the log message added on v0.1.2.
