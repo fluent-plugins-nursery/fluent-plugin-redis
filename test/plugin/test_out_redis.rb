@@ -21,6 +21,7 @@ class FileOutputTest < Test::Unit::TestCase
     assert_equal 'localhost', @d.instance.host
     assert_equal 6379, @d.instance.port
     assert_equal 1, @d.instance.db_number
+    assert_nil @d.instance.password
   end
 
   def test_format
