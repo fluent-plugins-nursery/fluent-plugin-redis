@@ -3,10 +3,10 @@ $:.push File.expand_path("../lib", __FILE__)
 
 Gem::Specification.new do |s|
   s.name        = "fluent-plugin-redis"
-  s.version     = "0.2.0"
+  s.version     = "0.2.1"
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["Yuki Nishijima", "Hiroshi Hatake", "Kenji Okimoto"]
-  s.date        = %q{2011-09-30}
+  s.date        = %q{2016-10-25}
   s.email       = ["mail@yukinishijima.net", "fluent@clear-code.com"]
   s.homepage    = "http://github.com/yuki24/fluent-plugin-redis"
   s.summary     = "Redis output plugin for Fluent"
