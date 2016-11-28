@@ -32,9 +32,7 @@ module Fluent
 
       options = {:host => @host, :port => @port,
                  :thread_safe => true, :db => @db_number}
-      if @password
-        options.merge!(:password => @password)
-      end
+      options[:password] = @password if @password
 
       @redis = Redis.new(options)
     end
