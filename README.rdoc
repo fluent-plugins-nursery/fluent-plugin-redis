@@ -20,6 +20,8 @@ Then fluent automatically loads the plugin installed.
 
       # database number is optional.
       db_number 0        # 0 is default
+      # If requirepass is set, please specify this.
+      # password hogefuga
     </match>
 
 

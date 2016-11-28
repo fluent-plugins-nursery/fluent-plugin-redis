@@ -6,6 +6,7 @@ module Fluent
     config_param :host, :string, :default => 'localhost'
     config_param :port, :integer, :default => 6379
     config_param :db_number, :integer, :default => 0
+    config_param :password, :string, :default => nil, :secret => true
 
     # To support log_level option implemented by Fluentd v0.10.43
     unless method_defined?(:log)
@@ -29,8 +30,15 @@ module Fluent
     def start
       super
 
-      @redis = Redis.new(:host => @host, :port => @port,
-                         :thread_safe => true, :db => @db_number)
+      options = {
+        :host => @host,
+        :port => @port,
+        :thread_safe => true,
+        :db => @db_number
+      }
+      options[:password] = @password if @password
+
+      @redis = Redis.new(options)
     end
 
     def shutdown
