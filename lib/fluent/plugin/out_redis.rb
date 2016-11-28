@@ -30,8 +30,12 @@ module Fluent
     def start
       super
 
-      options = {:host => @host, :port => @port,
-                 :thread_safe => true, :db => @db_number}
+      options = {
+        :host => @host,
+        :port => @port,
+        :thread_safe => true,
+        :db => @db_number
+      }
       options[:password] = @password if @password
 
       @redis = Redis.new(options)
