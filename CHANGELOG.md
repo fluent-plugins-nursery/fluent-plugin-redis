@@ -1,3 +1,8 @@
+## 0.2.2
+
+* Use redis-rb 3.2.x
+* Support requirepass authentication
+
 ## 0.2.1
 
 * Use config_param to clarify supported/default parameters.
