@@ -24,6 +24,19 @@ class FileOutputTest < Test::Unit::TestCase
     assert_nil @d.instance.password
   end
 
+  def test_configure_with_password
+    d = create_driver %[
+      host localhost
+      port 6379
+      db_number 1
+      password testpass
+    ]
+    assert_equal 'localhost', d.instance.host
+    assert_equal 6379, d.instance.port
+    assert_equal 1, d.instance.db_number
+    assert_equal 'testpass', d.instance.password
+  end
+
   def test_format
     @d.emit({"a"=>1}, @time)
     @d.expect_format(["test.#{@time}", {"a"=>1}].to_msgpack)
