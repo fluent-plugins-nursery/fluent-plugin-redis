@@ -20,11 +20,6 @@ module Fluent::Plugin
       config_set_default :chunk_keys, ['tag']
     end
 
-    # To support log_level option implemented by Fluentd v0.10.43
-    unless method_defined?(:log)
-      define_method("log") { $log }
-    end
-
     def initialize
       super
       require 'redis'
