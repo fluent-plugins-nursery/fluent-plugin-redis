@@ -1,7 +1,11 @@
 require 'fluent/test'
+require 'fluent/test/helpers'
+require 'fluent/test/driver/output'
 require 'fluent/plugin/out_redis'
 
 class FileOutputTest < Test::Unit::TestCase
+  include Fluent::Test::Helpers
+
   def setup
     Fluent::Test.setup
 
@@ -10,11 +14,11 @@ class FileOutputTest < Test::Unit::TestCase
       port 6379
       db_number 1
     ]
-    @time = Time.parse("2011-01-02 13:14:15 UTC").to_i
+    @time = event_time("2011-01-02 13:14:15 UTC")
   end
 
   def create_driver(conf = CONFIG)
-    Fluent::Test::BufferedOutputTestDriver.new(Fluent::RedisOutput).configure(conf)
+    Fluent::Test::Driver::Output.new(Fluent::Plugin::RedisOutput).configure(conf)
   end
 
   def test_configure
@@ -38,15 +42,18 @@ class FileOutputTest < Test::Unit::TestCase
   end
 
   def test_format
-    @d.emit({"a"=>1}, @time)
-    @d.expect_format(["test.#{@time}", {"a"=>1}].to_msgpack)
-    @d.run
+    @d.run(default_tag: 'test') do
+      @d.feed(@time, {"a"=>1})
+    end
+    assert_equal [["test.#{@time}", {"a"=>1}].to_msgpack], @d.formatted
   end
 
   def test_write
-    @d.emit({"a"=>2}, @time)
-    @d.emit({"a"=>3}, @time)
-    @d.run
+    @d.run(default_tag: 'test') do
+      @d.feed(@time, {"a"=>2})
+      @d.feed(@time, {"a"=>3})
+    end
+
 
     assert_equal "2", @d.instance.redis.hget("test.#{@time}.0", "a")
     assert_equal "3", @d.instance.redis.hget("test.#{@time}.1", "a")

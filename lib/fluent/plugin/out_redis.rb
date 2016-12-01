@@ -1,12 +1,24 @@
-module Fluent
-  class RedisOutput < BufferedOutput
+require 'fluent/plugin/output'
+
+module Fluent::Plugin
+  class RedisOutput < Output
     Fluent::Plugin.register_output('redis', self)
+
+    helpers :compat_parameters
+
+    DEFAULT_BUFFER_TYPE = "memory"
+
     attr_reader :redis
 
     config_param :host, :string, :default => 'localhost'
     config_param :port, :integer, :default => 6379
     config_param :db_number, :integer, :default => 0
     config_param :password, :string, :default => nil, :secret => true
+
+    config_section :buffer do
+      config_set_default :@type, DEFAULT_BUFFER_TYPE
+      config_set_default :chunk_keys, ['tag']
+    end
 
     # To support log_level option implemented by Fluentd v0.10.43
     unless method_defined?(:log)
@@ -20,6 +32,7 @@ module Fluent
     end
 
     def configure(conf)
+      compat_parameters_convert(conf, :buffer)
       super
 
       if conf.has_key?('namespace')
