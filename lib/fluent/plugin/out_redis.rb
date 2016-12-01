@@ -1,3 +1,5 @@
+require 'redis'
+require 'msgpack'
 require 'fluent/plugin/output'
 
 module Fluent::Plugin
@@ -22,8 +24,6 @@ module Fluent::Plugin
 
     def initialize
       super
-      require 'redis'
-      require 'msgpack'
     end
 
     def configure(conf)
