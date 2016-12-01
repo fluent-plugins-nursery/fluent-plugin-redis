@@ -50,19 +50,19 @@ class FileOutputTest < Test::Unit::TestCase
 
   class WriteTest < self
     def setup
-      Timecop.freeze(Time.parse("2011-01-02 13:14:15 UTC"))
+      Timecop.freeze(Time.parse("2011-01-02 13:14:00 UTC"))
       @d = create_driver
     end
 
     def test_write
-      time = Fluent::Engine.now
+      time = Fluent::Engine.now.to_i
       @d.run(default_tag: 'test') do
         @d.feed(time, {"a"=>2})
         @d.feed(time, {"a"=>3})
       end
 
-      assert_equal "2", @d.instance.redis.hget(@d.instance.redis.keys[0], "a")
-      assert_equal "3", @d.instance.redis.hget(@d.instance.redis.keys[1], "a")
+      assert_equal "2", @d.instance.redis.hget("test.#{time}.0", "a")
+      assert_equal "3", @d.instance.redis.hget("test.#{time}.1", "a")
     end
 
     def teardown
