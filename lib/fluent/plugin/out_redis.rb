@@ -6,7 +6,7 @@ module Fluent::Plugin
   class RedisOutput < Output
     Fluent::Plugin.register_output('redis', self)
 
-    helpers :compat_parameters
+    helpers :compat_parameters, :inject
 
     DEFAULT_BUFFER_TYPE = "memory"
 
@@ -16,14 +16,17 @@ module Fluent::Plugin
     config_param :port, :integer, default: 6379
     config_param :db_number, :integer, default: 0
     config_param :password, :string, default: nil, secret: true
+    config_param :insert_key_prefix, :string, default: "${tag}"
+    config_param :strtime_format, :string, default: "%Y/%m/%d %H:%M:%S.%N%z"
 
     config_section :buffer do
       config_set_default :@type, DEFAULT_BUFFER_TYPE
-      config_set_default :chunk_keys, ['tag']
+      config_set_default :chunk_keys, ['tag', 'time']
+      config_set_default :timekey, 60
     end
 
     def configure(conf)
-      compat_parameters_convert(conf, :buffer)
+      compat_parameters_convert(conf, :buffer, :inject)
       super
 
       if conf.has_key?('namespace')
@@ -51,22 +54,33 @@ module Fluent::Plugin
     end
 
     def format(tag, time, record)
-      identifier = [tag, time].join(".")
-      [identifier, record].to_msgpack
+      record = inject_values_to_record(tag, time, record)
+      [tag, time, record].to_msgpack
     end
 
     def write(chunk)
+      tag, time = expand_placeholders(chunk.metadata)
       @redis.pipelined {
         chunk.open { |io|
           begin
             MessagePack::Unpacker.new(io).each.each_with_index { |record, index|
-              @redis.mapped_hmset "#{record[0]}.#{index}", record[1]
+              identifier = [tag, time].join(".")
+              @redis.mapped_hmset "#{identifier}.#{index}", record[2]
             }
           rescue EOFError
             # EOFError always occured when reached end of chunk.
           end
         }
       }
+    end
+
+    private
+
+    def expand_placeholders(metadata)
+      tag = extract_placeholders(@insert_key_prefix, metadata)
+      strtime = extract_placeholders(@strtime_format, metadata)
+      time = Time.parse(strtime).to_i rescue ""
+      return tag, time
     end
   end
 end

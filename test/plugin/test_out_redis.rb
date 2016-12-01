@@ -2,6 +2,7 @@ require 'fluent/test'
 require 'fluent/test/helpers'
 require 'fluent/test/driver/output'
 require 'fluent/plugin/out_redis'
+require 'timecop'
 
 class FileOutputTest < Test::Unit::TestCase
   include Fluent::Test::Helpers
@@ -45,16 +46,32 @@ class FileOutputTest < Test::Unit::TestCase
     @d.run(default_tag: 'test') do
       @d.feed(@time, {"a"=>1})
     end
-    assert_equal [["test.#{@time}", {"a"=>1}].to_msgpack], @d.formatted
+    assert_equal [["test", @time, {"a"=>1}].to_msgpack], @d.formatted
   end
 
-  def test_write
-    @d.run(default_tag: 'test') do
-      @d.feed(@time, {"a"=>2})
-      @d.feed(@time, {"a"=>3})
+  class WriteTest < self
+    def setup
+      Timecop.freeze(Time.parse("2011-01-02 13:14:15 UTC"))
+      @d = create_driver %[
+        host localhost
+        port 6379
+        db_number 1
+      ]
     end
 
-    assert_equal "2", @d.instance.redis.hget("test.#{@time}.0", "a")
-    assert_equal "3", @d.instance.redis.hget("test.#{@time}.1", "a")
+    def test_write
+      time = Fluent::Engine.now
+      @d.run(default_tag: 'test') do
+        @d.feed(time, {"a"=>2})
+        @d.feed(time, {"a"=>3})
+      end
+
+      assert_equal "2", @d.instance.redis.hget(@d.instance.redis.keys[0], "a")
+      assert_equal "3", @d.instance.redis.hget(@d.instance.redis.keys[1], "a")
+    end
+
+    def teardown
+      Timecop.return
+    end
   end
 end
