@@ -7,14 +7,16 @@ require 'timecop'
 class FileOutputTest < Test::Unit::TestCase
   include Fluent::Test::Helpers
 
+  CONFIG = %[
+    host localhost
+    port 6379
+    db_number 1
+  ]
+
   def setup
     Fluent::Test.setup
 
-    @d = create_driver %[
-      host localhost
-      port 6379
-      db_number 1
-    ]
+    @d = create_driver
     @time = event_time("2011-01-02 13:14:15 UTC")
   end
 
@@ -30,10 +32,7 @@ class FileOutputTest < Test::Unit::TestCase
   end
 
   def test_configure_with_password
-    d = create_driver %[
-      host localhost
-      port 6379
-      db_number 1
+    d = create_driver CONFIG + %[
       password testpass
     ]
     assert_equal 'localhost', d.instance.host
@@ -52,11 +51,7 @@ class FileOutputTest < Test::Unit::TestCase
   class WriteTest < self
     def setup
       Timecop.freeze(Time.parse("2011-01-02 13:14:15 UTC"))
-      @d = create_driver %[
-        host localhost
-        port 6379
-        db_number 1
-      ]
+      @d = create_driver
     end
 
     def test_write
