@@ -22,10 +22,6 @@ module Fluent::Plugin
       config_set_default :chunk_keys, ['tag']
     end
 
-    def initialize
-      super
-    end
-
     def configure(conf)
       compat_parameters_convert(conf, :buffer)
       super
