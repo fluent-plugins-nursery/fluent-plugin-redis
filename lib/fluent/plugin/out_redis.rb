@@ -17,7 +17,7 @@ module Fluent::Plugin
     config_param :db_number, :integer, default: 0
     config_param :password, :string, default: nil, secret: true
     config_param :insert_key_prefix, :string, default: "${tag}"
-    config_param :strtime_format, :string, default: "%s"
+    config_param :strftime_format, :string, default: "%s"
 
     config_section :buffer do
       config_set_default :@type, DEFAULT_BUFFER_TYPE
@@ -78,7 +78,7 @@ module Fluent::Plugin
 
     def expand_placeholders(metadata)
       tag = extract_placeholders(@insert_key_prefix, metadata)
-      time = extract_placeholders(@strtime_format, metadata)
+      time = extract_placeholders(@strftime_format, metadata)
       return tag, time
     end
   end
