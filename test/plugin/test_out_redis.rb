@@ -51,18 +51,34 @@ class FileOutputTest < Test::Unit::TestCase
   class WriteTest < self
     def setup
       Timecop.freeze(Time.parse("2011-01-02 13:14:00 UTC"))
-      @d = create_driver
     end
 
     def test_write
+      d = create_driver
       time = Fluent::Engine.now.to_i
-      @d.run(default_tag: 'test') do
-        @d.feed(time, {"a"=>2})
-        @d.feed(time, {"a"=>3})
+      d.run(default_tag: 'test') do
+        d.feed(time, {"a"=>2})
+        d.feed(time, {"a"=>3})
       end
 
-      assert_equal "2", @d.instance.redis.hget("test.#{time}.0", "a")
-      assert_equal "3", @d.instance.redis.hget("test.#{time}.1", "a")
+      assert_equal "2", d.instance.redis.hget("test.#{time}.0", "a")
+      assert_equal "3", d.instance.redis.hget("test.#{time}.1", "a")
+    end
+
+    def test_write_with_custom_strftime_format
+      d = create_driver CONFIG + %[
+        strftime_format %Y%m%d
+      ]
+      now = Time.parse("2011-01-02 13:14:00 UTC")
+      time = Fluent::EventTime.from_time(now)
+      strtime = now.strftime("%Y%m%d")
+      d.run(default_tag: 'test') do
+        d.feed(time, {"a"=>4})
+        d.feed(time, {"a"=>5})
+      end
+
+      assert_equal "4", d.instance.redis.hget("test.#{strtime}.0", "a")
+      assert_equal "5", d.instance.redis.hget("test.#{strtime}.1", "a")
     end
 
     def teardown
