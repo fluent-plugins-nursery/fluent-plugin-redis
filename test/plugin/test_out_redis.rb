@@ -54,7 +54,6 @@ class FileOutputTest < Test::Unit::TestCase
       @d.feed(@time, {"a"=>3})
     end
 
-
     assert_equal "2", @d.instance.redis.hget("test.#{@time}.0", "a")
     assert_equal "3", @d.instance.redis.hget("test.#{@time}.1", "a")
   end
