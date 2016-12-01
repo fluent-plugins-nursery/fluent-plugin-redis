@@ -29,6 +29,8 @@ class FileOutputTest < Test::Unit::TestCase
     assert_equal 6379, @d.instance.port
     assert_equal 1, @d.instance.db_number
     assert_nil @d.instance.password
+    assert_equal '${tag}', @d.instance.insert_key_prefix
+    assert_equal '%s', @d.instance.strftime_format
   end
 
   def test_configure_with_password
