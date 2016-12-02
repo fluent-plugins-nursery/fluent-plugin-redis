@@ -44,6 +44,21 @@ class FileOutputTest < Test::Unit::TestCase
     assert_equal 'testpass', d.instance.password
   end
 
+  def test_configure_without_tag_chunk_key
+    config = config_element('ROOT', '', {
+                              "host" => "localhost",
+                              "port" =>  6379,
+                              "db_number" => 1,
+                            }, [
+                              config_element('buffer', 'time', {
+                                               'chunk_keys' => 'time',
+                                             })
+                            ])
+    assert_raise Fluent::ConfigError do
+      create_driver(config)
+    end
+  end
+
   def test_format
     @d.run(default_tag: 'test') do
       @d.feed(@time, {"a"=>1})
