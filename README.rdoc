@@ -13,7 +13,7 @@ Then fluent automatically loads the plugin installed.
 == Configuration
 
     <match redis.**>
-      type redis
+      @type redis
 
       host localhost
       port 6379
