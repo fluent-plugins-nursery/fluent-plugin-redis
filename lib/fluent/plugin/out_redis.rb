@@ -33,6 +33,8 @@ module Fluent::Plugin
       if conf.has_key?('namespace')
         log.warn "namespace option has been removed from fluent-plugin-redis 0.1.3. Please add or remove the namespace '#{conf['namespace']}' manually."
       end
+      raise Fluent::ConfigError, "'tag' in chunk_keys is required." if not @chunk_key_tag
+      raise Fluent::ConfigError, "'time' in chunk_keys is required." if not @chunk_key_time
     end
 
     def start
