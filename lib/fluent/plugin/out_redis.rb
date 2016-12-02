@@ -78,7 +78,7 @@ module Fluent::Plugin
             end
           }
         else
-          chunk.msgpack_each do |_tag, _time, record|
+          chunk.each do |_tag, _time, record|
             @redis.mapped_hmset "#{tag}", record
           end
         end
