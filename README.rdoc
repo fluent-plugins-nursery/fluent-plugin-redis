@@ -22,6 +22,14 @@ Then fluent automatically loads the plugin installed.
       db_number 0        # 0 is default
       # If requirepass is set, please specify this.
       # password hogefuga
+      # Users can set '${tag}' or ${tag[0]}.${tag[1]} or ...?
+      # insert_key_prefix '${tag}'
+      # Users can set strftime format.
+      # "%s" will be replaced into unixtime.
+      # "%Y%m%d.%H%M%S" will be replaced like as 20161202.112335.
+      # strftime_format "%s"
+      # Allow insert key duplicate. It will work as update values.
+      # allow_duplicate_key true
     </match>
 
 
