@@ -31,6 +31,7 @@ class FileOutputTest < Test::Unit::TestCase
     assert_nil @d.instance.password
     assert_equal '${tag}', @d.instance.insert_key_prefix
     assert_equal '%s', @d.instance.strftime_format
+    assert_false @d.instance.allow_duplicate_key
   end
 
   def test_configure_with_password
@@ -81,6 +82,19 @@ class FileOutputTest < Test::Unit::TestCase
 
       assert_equal "4", d.instance.redis.hget("test.#{strtime}.0", "a")
       assert_equal "5", d.instance.redis.hget("test.#{strtime}.1", "a")
+    end
+
+    def test_write_with_allow_duplicate
+      d = create_driver CONFIG + %[
+        allow_duplicate_key true
+      ]
+      time = event_time("2011-01-02 13:14:00 UTC")
+      d.run(default_tag: 'test.duplicate') do
+        d.feed(time, {"a"=>6})
+        d.feed(time, {"a"=>7})
+      end
+
+      assert_equal "7", d.instance.redis.hget("test.duplicate", "a")
     end
 
     def teardown

@@ -18,6 +18,7 @@ module Fluent::Plugin
     config_param :password, :string, default: nil, secret: true
     config_param :insert_key_prefix, :string, default: "${tag}"
     config_param :strftime_format, :string, default: "%s"
+    config_param :allow_duplicate_key, :bool, default: false
 
     config_section :buffer do
       config_set_default :@type, DEFAULT_BUFFER_TYPE
@@ -58,19 +59,29 @@ module Fluent::Plugin
       [tag, time, record].to_msgpack
     end
 
+    def formatted_to_msgpack_binary
+      true
+    end
+
     def write(chunk)
       tag, time = expand_placeholders(chunk.metadata)
       @redis.pipelined {
-        chunk.open { |io|
-          begin
-            MessagePack::Unpacker.new(io).each.each_with_index { |record, index|
-              identifier = [tag, time].join(".")
-              @redis.mapped_hmset "#{identifier}.#{index}", record[2]
-            }
-          rescue EOFError
-            # EOFError always occured when reached end of chunk.
+        unless @allow_duplicate_key
+          chunk.open { |io|
+            begin
+              MessagePack::Unpacker.new(io).each.each_with_index { |record, index|
+                identifier = [tag, time].join(".")
+                @redis.mapped_hmset "#{identifier}.#{index}", record[2]
+              }
+            rescue EOFError
+              # EOFError always occured when reached end of chunk.
+            end
+          }
+        else
+          chunk.msgpack_each do |_tag, _time, record|
+            @redis.mapped_hmset "#{tag}", record
           end
-        }
+        end
       }
     end
 
