@@ -68,6 +68,20 @@ class FileOutputTest < Test::Unit::TestCase
       assert_equal "3", d.instance.redis.hget("test.#{time}.1", "a")
     end
 
+    def test_write_with_insert_key_prefix
+      d = create_driver CONFIG + %[
+        insert_key_prefix "${tag[1]}.${tag[2]}"
+      ]
+      time = Fluent::Engine.now.to_i
+      d.run(default_tag: 'prefix.insert.test') do
+        d.feed(time, {"a"=>2})
+        d.feed(time, {"a"=>3})
+      end
+
+      assert_equal "2", d.instance.redis.hget("insert.test.#{time}.0", "a")
+      assert_equal "3", d.instance.redis.hget("insert.test.#{time}.1", "a")
+    end
+
     def test_write_with_custom_strftime_format
       d = create_driver CONFIG + %[
         strftime_format "%Y%m%d.%H%M%S"
