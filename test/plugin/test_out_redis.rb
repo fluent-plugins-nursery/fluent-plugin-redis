@@ -2,6 +2,7 @@ require 'fluent/test'
 require 'fluent/test/helpers'
 require 'fluent/test/driver/output'
 require 'fluent/plugin/out_redis'
+require 'fluent/time' # Fluent::TimeFormatter
 require 'timecop'
 
 class FileOutputTest < Test::Unit::TestCase
@@ -22,6 +23,10 @@ class FileOutputTest < Test::Unit::TestCase
 
   def create_driver(conf = CONFIG)
     Fluent::Test::Driver::Output.new(Fluent::Plugin::RedisOutput).configure(conf)
+  end
+
+  def time_formatter(inject_config)
+    Fluent::TimeFormatter.new(inject_config.time_format, inject_config.localtime, inject_config.timezone)
   end
 
   def test_configure
@@ -64,6 +69,29 @@ class FileOutputTest < Test::Unit::TestCase
       @d.feed(@time, {"a"=>1})
     end
     assert_equal [["test", @time, {"a"=>1}].to_msgpack], @d.formatted
+  end
+
+  class InjectTest < self
+    def test_format_inject_tag_keys
+      d = create_driver CONFIG + %[
+        include_tag_key true
+      ]
+      d.run(default_tag: 'test') do
+        d.feed(@time, {"a"=>1})
+      end
+      assert_equal [["test", @time, {"a"=>1, "tag" => "test"}].to_msgpack], d.formatted
+    end
+
+    def test_format_inject_time_keys
+      d = create_driver CONFIG + %[
+        include_time_key true
+      ]
+      timef = time_formatter(d.instance.inject_config)
+      d.run(default_tag: 'test') do
+        d.feed(@time, {"a"=>1})
+      end
+      assert_equal [["test", @time, {"a"=>1, "time" => timef.call(@time)}].to_msgpack], d.formatted
+    end
   end
 
   class WriteTest < self
