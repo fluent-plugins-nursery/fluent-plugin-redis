@@ -1,9 +1,12 @@
 require 'redis'
 require 'msgpack'
+require 'fluent/msgpack_factory'
 require 'fluent/plugin/output'
 
 module Fluent::Plugin
   class RedisOutput < Output
+    include Fluent::MessagePackFactory::Mixin
+
     Fluent::Plugin.register_output('redis', self)
 
     helpers :compat_parameters, :inject
@@ -71,7 +74,7 @@ module Fluent::Plugin
         unless @allow_duplicate_key
           chunk.open { |io|
             begin
-              MessagePack::Unpacker.new(io).each.with_index { |record, index|
+              msgpack_unpacker(io).each.with_index { |record, index|
                 identifier = [tag, time].join(".")
                 @redis.mapped_hmset "#{identifier}.#{index}", record[2]
               }
