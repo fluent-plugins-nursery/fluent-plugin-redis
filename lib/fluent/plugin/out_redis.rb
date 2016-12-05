@@ -71,7 +71,7 @@ module Fluent::Plugin
         unless @allow_duplicate_key
           chunk.open { |io|
             begin
-              MessagePack::Unpacker.new(io).each.each_with_index { |record, index|
+              MessagePack::Unpacker.new(io).each.with_index { |record, index|
                 identifier = [tag, time].join(".")
                 @redis.mapped_hmset "#{identifier}.#{index}", record[2]
               }
