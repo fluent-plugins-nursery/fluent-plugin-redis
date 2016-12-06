@@ -3,7 +3,6 @@ require 'fluent/test/helpers'
 require 'fluent/test/driver/output'
 require 'fluent/plugin/out_redis'
 require 'fluent/time' # Fluent::TimeFormatter
-require 'timecop'
 
 class FileOutputTest < Test::Unit::TestCase
   include Fluent::Test::Helpers
@@ -95,10 +94,6 @@ class FileOutputTest < Test::Unit::TestCase
   end
 
   class WriteTest < self
-    def setup
-      Timecop.freeze(Time.parse("2011-01-02 13:14:00 UTC"))
-    end
-
     def test_write
       d = create_driver
       time = event_time("2011-01-02 13:14:00 UTC")
@@ -151,10 +146,6 @@ class FileOutputTest < Test::Unit::TestCase
       end
 
       assert_equal "7", d.instance.redis.hget("test.duplicate", "a")
-    end
-
-    def teardown
-      Timecop.return
     end
   end
 end
