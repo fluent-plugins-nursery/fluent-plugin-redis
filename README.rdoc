@@ -2,6 +2,16 @@
 
 fluent-plugin-redis is a fluent plugin to output to redis.
 
+== Requirements
+
+    |fluent-plugin-redis|     fluentd      |  ruby  |
+    |-------------------|------------------|--------|
+    |     >= 0.3.0      | >= 0.14.8        | >= 2.1 |
+    |     == 0.2.3      | ~> 0.12.0 *      | >= 1.9 |
+    |      < 0.2.3      | >= 0.10.0, < 2 * | >= 1.9 |
+
+    * May not support all future fluentd features
+
 == Installation
 
 What you have to do is only installing like this:
@@ -32,6 +42,12 @@ Then fluent automatically loads the plugin installed.
       # allow_duplicate_key true
     </match>
 
+
+=== Notice
+
+<em>insert_key_prefix</em>, <em>strftime_format</em>, and <em>allow_duplicate_key</em> are newly added config parameters.
+
+They can use v0.3.0 or later. To use this parameters, users must update Fluentd to v0.14 or later and this plugin to v0.3.0 or later.
 
 == Contributing to fluent-plugin-redis
  
