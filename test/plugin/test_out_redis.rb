@@ -129,9 +129,8 @@ class FileOutputTest < Test::Unit::TestCase
       d = create_driver CONFIG + %[
         strftime_format "%Y%m%d.%H%M%S"
       ]
-      now = Time.parse("2011-01-02 13:14:00 UTC").localtime
-      time = Fluent::EventTime.from_time(now)
-      strtime = now.strftime("%Y%m%d.%H%M%S")
+      time = event_time("2011-01-02 13:14:00 UTC")
+      strtime = Time.at(time.to_r).strftime("%Y%m%d.%H%M%S")
       d.run(default_tag: 'test') do
         d.feed(time, {"a"=>4})
         d.feed(time, {"a"=>5})
