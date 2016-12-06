@@ -72,7 +72,7 @@ module Fluent::Plugin
         unless @allow_duplicate_key
           stream = chunk.to_msgpack_stream
           begin
-            @unpacker.feed_each(stream).each.with_index { |record, index|
+            @unpacker.feed_each(stream).with_index { |record, index|
               identifier = [tag, time].join(".")
               @redis.mapped_hmset "#{identifier}.#{index}", record[2]
             }
