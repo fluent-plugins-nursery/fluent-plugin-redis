@@ -101,7 +101,7 @@ class FileOutputTest < Test::Unit::TestCase
 
     def test_write
       d = create_driver
-      time = Fluent::Engine.now
+      time = event_time("2011-01-02 13:14:00 UTC")
       d.run(default_tag: 'test') do
         d.feed(time, {"a"=>2})
         d.feed(time, {"a"=>3})
@@ -115,7 +115,7 @@ class FileOutputTest < Test::Unit::TestCase
       d = create_driver CONFIG + %[
         insert_key_prefix "${tag[1]}.${tag[2]}"
       ]
-      time = Fluent::Engine.now
+      time = event_time("2011-01-02 13:14:00 UTC")
       d.run(default_tag: 'prefix.insert.test') do
         d.feed(time, {"a"=>2})
         d.feed(time, {"a"=>3})
