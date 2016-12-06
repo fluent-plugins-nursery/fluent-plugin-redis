@@ -1,3 +1,10 @@
+## 0.3.0
+
+* Migrate v0.14 API based plugin
+* Allow duplicate insert key to support update values functionality
+* Use v0.14's built-in placeholder functionality
+  * Enabled to specify more flexible tag and time format for identifier
+
 ## 0.2.2
 
 * Use redis-rb 3.2.x
