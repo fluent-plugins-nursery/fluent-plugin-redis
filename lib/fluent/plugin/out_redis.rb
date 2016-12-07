@@ -1,12 +1,9 @@
 require 'redis'
 require 'msgpack'
-require 'fluent/msgpack_factory'
 require 'fluent/plugin/output'
 
 module Fluent::Plugin
   class RedisOutput < Output
-    include Fluent::MessagePackFactory::Mixin
-
     Fluent::Plugin.register_output('redis', self)
 
     helpers :compat_parameters, :inject
@@ -38,6 +35,7 @@ module Fluent::Plugin
       end
       raise Fluent::ConfigError, "'tag' in chunk_keys is required." if not @chunk_key_tag
       raise Fluent::ConfigError, "'time' in chunk_keys is required." if not @chunk_key_time
+      @unpacker = Fluent::Engine.msgpack_factory.unpacker
     end
 
     def start
@@ -72,16 +70,15 @@ module Fluent::Plugin
       tag, time = expand_placeholders(chunk.metadata)
       @redis.pipelined {
         unless @allow_duplicate_key
-          chunk.open { |io|
-            begin
-              msgpack_unpacker(io).each.with_index { |record, index|
-                identifier = [tag, time].join(".")
-                @redis.mapped_hmset "#{identifier}.#{index}", record[2]
-              }
-            rescue EOFError
-              # EOFError always occured when reached end of chunk.
-            end
-          }
+          stream = chunk.to_msgpack_stream
+          begin
+            @unpacker.feed_each(stream).with_index { |record, index|
+              identifier = [tag, time].join(".")
+              @redis.mapped_hmset "#{identifier}.#{index}", record[2]
+            }
+          rescue EOFError
+            # EOFError always occured when reached end of chunk.
+          end
         else
           chunk.each do |_tag, _time, record|
             @redis.mapped_hmset "#{tag}", record
