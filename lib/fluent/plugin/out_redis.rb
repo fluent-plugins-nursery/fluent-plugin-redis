@@ -71,14 +71,10 @@ module Fluent::Plugin
       @redis.pipelined {
         unless @allow_duplicate_key
           stream = chunk.to_msgpack_stream
-          begin
-            @unpacker.feed_each(stream).with_index { |record, index|
-              identifier = [tag, time].join(".")
-              @redis.mapped_hmset "#{identifier}.#{index}", record[2]
-            }
-          rescue EOFError
-            # EOFError always occured when reached end of chunk.
-          end
+          @unpacker.feed_each(stream).with_index { |record, index|
+            identifier = [tag, time].join(".")
+            @redis.mapped_hmset "#{identifier}.#{index}", record[2]
+          }
         else
           chunk.each do |_tag, _time, record|
             @redis.mapped_hmset "#{tag}", record
