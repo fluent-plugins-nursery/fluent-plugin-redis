@@ -1,3 +1,8 @@
+## 0.3.1
+
+* Use public msgpack related API instead of internal its API
+* Remove needless rescue block
+
 ## 0.3.0
 
 * Migrate v0.14 API based plugin
