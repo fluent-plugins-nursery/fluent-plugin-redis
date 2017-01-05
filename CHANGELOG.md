@@ -1,6 +1,6 @@
 ## 0.3.1
 
-* Use public msgpack related API instead of internal its API
+* Use public msgpack APIs instead of its internal APIs
 * Remove needless rescue block
 
 ## 0.3.0
