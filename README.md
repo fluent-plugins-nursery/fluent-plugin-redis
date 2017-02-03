@@ -59,8 +59,10 @@ They can use v0.3.0 or later. To use this parameters, users must update Fluentd 
 * Make sure to add tests for it. This is important so I don't break it in a future version unintentionally.
 * Please try not to mess with the Rakefile, version, or history. If you want to have your own version, or is otherwise necessary, that is fine, but please isolate to its own commit so I can cherry-pick around it.
 
-
 ## Copyright
 
-| Copyright | Copyright (c) 2011- Yuki Nishijima |
-| License   | Apache License, Version 2.0        |
+Copyright (c) 2011- Yuki Nishijima
+
+## License
+
+Apache License, Version 2.0
