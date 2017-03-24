@@ -36,6 +36,7 @@ class FileOutputTest < Test::Unit::TestCase
     assert_equal '${tag}', @d.instance.insert_key_prefix
     assert_equal '%s', @d.instance.strftime_format
     assert_false @d.instance.allow_duplicate_key
+    assert_equal 0, @d.instance.ttl
   end
 
   def test_configure_with_password
@@ -118,6 +119,22 @@ class FileOutputTest < Test::Unit::TestCase
 
       assert_equal "2", d.instance.redis.hget("test.#{time}.0", "a")
       assert_equal "3", d.instance.redis.hget("test.#{time}.1", "a")
+    end
+
+    def test_write_with_ttl
+      d = create_driver CONFIG + %[
+        ttl 60
+      ]
+      time = event_time("2011-01-02 13:14:00 UTC")
+      d.run(default_tag: 'ttl.insert.test') do
+        d.feed(time, {"a"=>2})
+        d.feed(time, {"a"=>3})
+      end
+
+      assert {0 < d.instance.redis.ttl("ttl.insert.test.#{time}.0") ||
+              d.instance.redis.ttl("ttl.insert.test.#{time}.0") <= 60}
+      assert {0 < d.instance.redis.ttl("ttl.insert.test.#{time}.1") ||
+              d.instance.redis.ttl("ttl.insert.test.#{time}.1") <= 60}
     end
 
     def test_write_with_custom_strftime_format
