@@ -36,6 +36,7 @@ class FileOutputTest < Test::Unit::TestCase
     assert_equal '${tag}', @d.instance.insert_key_prefix
     assert_equal '%s', @d.instance.strftime_format
     assert_false @d.instance.allow_duplicate_key
+    assert_equal Fluent::Plugin::RedisOutput::DEFAULT_TTL_VALUE, @d.instance.ttl
   end
 
   def test_configure_with_password
@@ -118,6 +119,23 @@ class FileOutputTest < Test::Unit::TestCase
 
       assert_equal "2", d.instance.redis.hget("test.#{time}.0", "a")
       assert_equal "3", d.instance.redis.hget("test.#{time}.1", "a")
+    end
+
+    def test_write_with_ttl
+      ttl = 2
+      d = create_driver CONFIG + %[
+        ttl #{ttl}
+        allow_duplicate_key true
+      ]
+      time = event_time("2011-01-02 13:14:00 UTC")
+      d.run(default_tag: 'ttl.insert.test') do
+        d.feed(time, {"a"=>2})
+      end
+
+      assert_in_delta 2.0, d.instance.redis.ttl("ttl.insert.test"), 1.0
+
+      sleep ttl+1
+      assert_equal -2, d.instance.redis.ttl("ttl.insert.test")
     end
 
     def test_write_with_custom_strftime_format

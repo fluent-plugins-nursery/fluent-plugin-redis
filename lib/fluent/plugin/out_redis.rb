@@ -9,6 +9,7 @@ module Fluent::Plugin
     helpers :compat_parameters, :inject
 
     DEFAULT_BUFFER_TYPE = "memory"
+    DEFAULT_TTL_VALUE = -1
 
     attr_reader :redis
 
@@ -19,6 +20,7 @@ module Fluent::Plugin
     config_param :insert_key_prefix, :string, default: "${tag}"
     config_param :strftime_format, :string, default: "%s"
     config_param :allow_duplicate_key, :bool, default: false
+    config_param :ttl, :integer, default: DEFAULT_TTL_VALUE
 
     config_section :buffer do
       config_set_default :@type, DEFAULT_BUFFER_TYPE
@@ -73,11 +75,17 @@ module Fluent::Plugin
           stream = chunk.to_msgpack_stream
           @unpacker.feed_each(stream).with_index { |record, index|
             identifier = [tag, time].join(".")
-            @redis.mapped_hmset "#{identifier}.#{index}", record[2]
+            @redis.multi do
+              @redis.mapped_hmset "#{identifier}.#{index}", record[2]
+              @redis.expire "#{identifier}.#{index}", @ttl if @ttl > 0
+            end
           }
         else
           chunk.each do |_tag, _time, record|
-            @redis.mapped_hmset "#{tag}", record
+            @redis.multi do
+              @redis.mapped_hmset "#{tag}", record
+              @redis.expire "#{tag}", @ttl if @ttl > 0
+            end
           end
         end
       }
