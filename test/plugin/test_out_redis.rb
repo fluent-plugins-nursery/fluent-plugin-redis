@@ -131,10 +131,8 @@ class FileOutputTest < Test::Unit::TestCase
         d.feed(time, {"a"=>3})
       end
 
-      assert {0 < d.instance.redis.ttl("ttl.insert.test.#{time}.0") ||
-              d.instance.redis.ttl("ttl.insert.test.#{time}.0") <= 60}
-      assert {0 < d.instance.redis.ttl("ttl.insert.test.#{time}.1") ||
-              d.instance.redis.ttl("ttl.insert.test.#{time}.1") <= 60}
+      assert_in_delta 60.0, d.instance.redis.ttl("ttl.insert.test.#{time}.0"), 1.0
+      assert_in_delta 60.0, d.instance.redis.ttl("ttl.insert.test.#{time}.1"), 1.0
     end
 
     def test_write_with_custom_strftime_format
