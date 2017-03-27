@@ -9,6 +9,7 @@ module Fluent::Plugin
     helpers :compat_parameters, :inject
 
     DEFAULT_BUFFER_TYPE = "memory"
+    DEFAULT_TTL_VALUE = -1
 
     attr_reader :redis
 
@@ -19,7 +20,7 @@ module Fluent::Plugin
     config_param :insert_key_prefix, :string, default: "${tag}"
     config_param :strftime_format, :string, default: "%s"
     config_param :allow_duplicate_key, :bool, default: false
-    config_param :ttl, :integer, default: 0 # If 0 is set, ttl is not set in each key.
+    config_param :ttl, :integer, default: DEFAULT_TTL_VALUE
 
     config_section :buffer do
       config_set_default :@type, DEFAULT_BUFFER_TYPE

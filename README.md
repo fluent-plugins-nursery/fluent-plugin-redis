@@ -40,7 +40,7 @@ Then fluent automatically loads the plugin installed.
       # strftime_format "%s"
       # Allow insert key duplicate. It will work as update values.
       # allow_duplicate_key true
-      # ttl 300 # If 0 is set, ttl is not set in each key.
+      # ttl 300 # If 0 or negative value is set, ttl is not set in each key.
     </match>
 
 
