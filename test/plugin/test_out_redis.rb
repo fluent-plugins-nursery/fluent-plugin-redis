@@ -122,17 +122,20 @@ class FileOutputTest < Test::Unit::TestCase
     end
 
     def test_write_with_ttl
+      ttl = 2
       d = create_driver CONFIG + %[
-        ttl 60
+        ttl #{ttl}
+        allow_duplicate_key true
       ]
       time = event_time("2011-01-02 13:14:00 UTC")
       d.run(default_tag: 'ttl.insert.test') do
         d.feed(time, {"a"=>2})
-        d.feed(time, {"a"=>3})
       end
 
-      assert_in_delta 60.0, d.instance.redis.ttl("ttl.insert.test.#{time}.0"), 1.0
-      assert_in_delta 60.0, d.instance.redis.ttl("ttl.insert.test.#{time}.1"), 1.0
+      assert_in_delta 2.0, d.instance.redis.ttl("ttl.insert.test"), 1.0
+
+      sleep ttl+1
+      assert_equal -2, d.instance.redis.ttl("ttl.insert.test")
     end
 
     def test_write_with_custom_strftime_format
