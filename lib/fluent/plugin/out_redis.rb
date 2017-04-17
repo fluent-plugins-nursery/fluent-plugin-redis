@@ -30,6 +30,7 @@ module Fluent::Plugin
 
     def configure(conf)
       compat_parameters_convert(conf, :buffer, :inject)
+      @running_multi_workers = system_config.workers > 1
       super
 
       if conf.has_key?('namespace')
@@ -68,13 +69,21 @@ module Fluent::Plugin
       true
     end
 
+    def multi_workers_ready?
+      true
+    end
+
     def write(chunk)
       tag, time = expand_placeholders(chunk.metadata)
       @redis.pipelined {
         unless @allow_duplicate_key
           stream = chunk.to_msgpack_stream
           @unpacker.feed_each(stream).with_index { |record, index|
-            identifier = [tag, time].join(".")
+            identifier = if @running_multi_workers
+                           [tag, time, fluentd_worker_id].join(".")
+                         else
+                           [tag, time].join(".")
+                         end
             @redis.multi do
               @redis.mapped_hmset "#{identifier}.#{index}", record[2]
               @redis.expire "#{identifier}.#{index}", @ttl if @ttl > 0
