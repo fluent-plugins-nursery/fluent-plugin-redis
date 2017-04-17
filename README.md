@@ -43,6 +43,14 @@ Then fluent automatically loads the plugin installed.
       # ttl 300 # If 0 or negative value is set, ttl is not set in each key.
     </match>
 
+### With multi workers
+
+fluent-plugin-redis can handle <em>multi workers</em>.
+This feature can be enabled with the following configuration:
+
+    <system>
+      workers n # where n >= 2.
+    </system>
 
 ### Notice
 
@@ -50,8 +58,12 @@ Then fluent automatically loads the plugin installed.
 
 They can use v0.3.0 or later. To use this parameters, users must update Fluentd to v0.14 or later and this plugin to v0.3.0 or later.
 
+<em>multi workers</em> are newly introduced feature in Fluentd v0.14.
+
+It can use this fetaure in this plugin in v0.3.3 or later.
+
 ## Contributing to fluent-plugin-redis
- 
+
 * Check out the latest master to make sure the feature hasn't been implemented or the bug hasn't been fixed yet
 * Check out the issue tracker to make sure someone already hasn't requested it and/or contributed it
 * Fork the project
