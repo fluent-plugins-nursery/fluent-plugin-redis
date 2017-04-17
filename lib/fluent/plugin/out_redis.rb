@@ -69,6 +69,10 @@ module Fluent::Plugin
       true
     end
 
+    def multi_workers_ready?
+      true
+    end
+
     def write(chunk)
       tag, time = expand_placeholders(chunk.metadata)
       @redis.pipelined {
