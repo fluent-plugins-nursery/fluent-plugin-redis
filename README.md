@@ -60,7 +60,7 @@ They can use v0.3.0 or later. To use this parameters, users must update Fluentd 
 
 <em>multi workers</em> are newly introduced feature in Fluentd v0.14.
 
-It can use this fetaure in this plugin in v0.3.3 or later.
+It can use this feature in this plugin in v0.3.3 or later.
 
 ## Contributing to fluent-plugin-redis
 
