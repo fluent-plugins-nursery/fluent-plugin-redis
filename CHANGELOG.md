@@ -1,3 +1,12 @@
+## 0.3.4
+* Pass chunk directly into builtin placeholders
+
+## 0.3.3
+* Add multi workers environment considaration
+
+## 0.3.2
+* Add TTL support
+
 ## 0.3.1
 
 * Use public msgpack APIs instead of its internal APIs
