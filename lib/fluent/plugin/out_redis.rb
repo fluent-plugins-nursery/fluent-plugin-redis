@@ -74,7 +74,7 @@ module Fluent::Plugin
     end
 
     def write(chunk)
-      tag, time = expand_placeholders(chunk.metadata)
+      tag, time = expand_placeholders(chunk)
       @redis.pipelined {
         unless @allow_duplicate_key
           stream = chunk.to_msgpack_stream
@@ -102,9 +102,9 @@ module Fluent::Plugin
 
     private
 
-    def expand_placeholders(metadata)
-      tag = extract_placeholders(@insert_key_prefix, metadata)
-      time = extract_placeholders(@strftime_format, metadata)
+    def expand_placeholders(chunk)
+      tag = extract_placeholders(@insert_key_prefix, chunk)
+      time = extract_placeholders(@strftime_format, chunk)
       return tag, time
     end
   end
