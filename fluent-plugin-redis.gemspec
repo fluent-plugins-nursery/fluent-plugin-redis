@@ -3,7 +3,7 @@ $:.push File.expand_path("../lib", __FILE__)
 
 Gem::Specification.new do |s|
   s.name        = "fluent-plugin-redis"
-  s.version     = "0.3.3"
+  s.version     = "0.3.4"
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["Yuki Nishijima", "Hiroshi Hatake", "Kenji Okimoto"]
   s.date        = %q{2017-04-17}
@@ -16,7 +16,7 @@ Gem::Specification.new do |s|
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ["lib"]
 
-  s.add_dependency %q<fluentd>, [">= 0.14.8", "< 2"]
+  s.add_dependency %q<fluentd>, [">= 0.14.22", "< 2"]
   s.add_dependency %q<redis>, ["~> 3.3.0"]
   s.add_development_dependency %q<rake>, [">= 11.3.0"]
   s.add_development_dependency %q<bundler>
