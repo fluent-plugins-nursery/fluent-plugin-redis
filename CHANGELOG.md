@@ -1,3 +1,6 @@
+## 0.3.5
+* Confirm Ruby 3.0 ready
+
 ## 0.3.4
 * Pass chunk directly into builtin placeholders
 
