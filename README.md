@@ -1,5 +1,7 @@
 # Redis output plugin for Fluent
 
+![Testing on Ubuntu](https://github.com/fluent-plugins-nursery/fluent-plugin-redis/workflows/Testing%20on%20Ubuntu/badge.svg)
+
 fluent-plugin-redis is a fluent plugin to output to redis.
 
 ## Requirements
