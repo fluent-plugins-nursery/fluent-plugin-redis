@@ -24,26 +24,37 @@ Then fluent automatically loads the plugin installed.
 
 ## Configuration
 
+### Example
+
     <match redis.**>
       @type redis
 
-      host localhost
-      port 6379
-
-      # database number is optional.
-      db_number 0        # 0 is default
-      # If requirepass is set, please specify this.
+      # host localhost
+      # port 6379
+      # db_number 0
       # password hogefuga
-      # Users can set '${tag}' or ${tag[0]}.${tag[1]} or ...?
       # insert_key_prefix '${tag}'
-      # Users can set strftime format.
-      # "%s" will be replaced into unixtime.
-      # "%Y%m%d.%H%M%S" will be replaced like as 20161202.112335.
       # strftime_format "%s"
-      # Allow insert key duplicate. It will work as update values.
-      # allow_duplicate_key true
-      # ttl 300 # If 0 or negative value is set, ttl is not set in each key.
+      # allow_duplicate_key false
+      # ttl 300
     </match>
+
+### Parameter
+
+|parameter|description|default|
+|---|---|---|
+|host|The hostname of Redis server|`localhost`|
+|port|The port number of Redis server|`6379`|
+|db_number|The number of database|`0`|
+|password|The password of Redis. If requirepass is set, please specify this|nil|
+|insert\_key\_prefix|Users can set '${tag}' or ${tag[0]}.${tag[1]} or ...?|`${tag}`|
+|strftime\_format|Users can set strftime format.<br> "%s" will be replaced into unixtime. "%Y%m%d.%H%M%S" will be replaced like as 20161202.112335|`"%s"`|
+|allow\_duplicate\_key|Allow duplicated insert key. It will work as update values|`false`|
+|ttl|The value of TTL. If 0 or negative value is set, ttl is not set in each key|`-1`|
+
+
+
+
 
 ### With multi workers
 
