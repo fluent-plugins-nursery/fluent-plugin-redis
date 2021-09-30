@@ -30,6 +30,7 @@ Then fluent automatically loads the plugin installed.
       @type redis
 
       # host localhost
+      # command hset
       # port 6379
       # db_number 0
       # password hogefuga
@@ -45,16 +46,13 @@ Then fluent automatically loads the plugin installed.
 |---|---|---|
 |host|The hostname of Redis server|`localhost`|
 |port|The port number of Redis server|`6379`|
+|command|Redis command to publish events (`hset` or `publish`)|`hset`|
 |db_number|The number of database|`0`|
 |password|The password of Redis. If requirepass is set, please specify this|nil|
 |insert\_key\_prefix|Users can set '${tag}' or ${tag[0]}.${tag[1]} or ...?|`${tag}`|
 |strftime\_format|Users can set strftime format.<br> "%s" will be replaced into unixtime. "%Y%m%d.%H%M%S" will be replaced like as 20161202.112335|`"%s"`|
-|allow\_duplicate\_key|Allow duplicated insert key. It will work as update values|`false`|
-|ttl|The value of TTL. If 0 or negative value is set, ttl is not set in each key|`-1`|
-
-
-
-
+|allow\_duplicate\_key|Allow duplicated insert key. It will work as update values (for `hset`)|`false`|
+|ttl|The value of TTL. If 0 or negative value is set, ttl is not set in each key (for `hset`)|`-1`|
 
 ### With multi workers
 
@@ -64,6 +62,22 @@ This feature can be enabled with the following configuration:
     <system>
       workers n # where n >= 2.
     </system>
+
+### Configure how to output to Redis
+
+By default, fluent-plugin-redis publishes each event as a hash map.
+For example, consider the following event:
+
+    tag=test.log time=1632977700 event={"message":"an example message"}
+
+it will be published as follows:
+
+    hset test.log.1632977700 message "an example message"
+
+Alternatively, you can set `publish` to the `command` option.
+With this enabled, the event above will be published as follows:
+
+    publish test.log {"message":"an example message"}
 
 ### Notice
 

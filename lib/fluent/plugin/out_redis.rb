@@ -6,7 +6,7 @@ module Fluent::Plugin
   class RedisOutput < Output
     Fluent::Plugin.register_output('redis', self)
 
-    helpers :compat_parameters, :inject
+    helpers :compat_parameters, :inject, :formatter
 
     DEFAULT_BUFFER_TYPE = "memory"
     DEFAULT_TTL_VALUE = -1
@@ -21,11 +21,17 @@ module Fluent::Plugin
     config_param :strftime_format, :string, default: "%s"
     config_param :allow_duplicate_key, :bool, default: false
     config_param :ttl, :integer, default: DEFAULT_TTL_VALUE
+    config_param :command, :enum, list: [:hset, :publish], default: :hset
 
     config_section :buffer do
       config_set_default :@type, DEFAULT_BUFFER_TYPE
       config_set_default :chunk_keys, ['tag', 'time']
       config_set_default :timekey, 60
+    end
+
+    config_section :format do
+      config_set_default :@type, 'json'
+      config_set_default :add_newline, false
     end
 
     def configure(conf)
@@ -39,6 +45,7 @@ module Fluent::Plugin
       raise Fluent::ConfigError, "'tag' in chunk_keys is required." if not @chunk_key_tag
       raise Fluent::ConfigError, "'time' in chunk_keys is required." if not @chunk_key_time
       @unpacker = Fluent::Engine.msgpack_factory.unpacker
+      @formatter = formatter_create
     end
 
     def start
@@ -73,7 +80,14 @@ module Fluent::Plugin
       true
     end
 
-    def write(chunk)
+    def redis_publish(chunk)
+      tag, time = expand_placeholders(chunk)
+      chunk.each do |_tag, _time, record|
+        @redis.publish "#{tag}", @formatter.format(tag, time, record)
+      end
+    end
+
+    def redis_hset(chunk)
       tag, time = expand_placeholders(chunk)
       @redis.pipelined {
         unless @allow_duplicate_key
@@ -98,6 +112,17 @@ module Fluent::Plugin
           end
         end
       }
+    end
+
+    def write(chunk)
+      case @command
+      when :hset
+        redis_hset(chunk)
+      when :publish
+        redis_publish(chunk)
+      else
+        log.error "unknown command #{@command}"
+      end
     end
 
     private
