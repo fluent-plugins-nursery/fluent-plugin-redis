@@ -22,10 +22,9 @@ jobs:
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ matrix.ruby }}
+        bundler-cache: true
     - name: unit testing
       env:
         CI: true
       run: |
-        gem install bundler rake
-        bundle install --jobs 4 --retry 3
         bundle exec rake test
